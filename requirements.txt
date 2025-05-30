@@ -1,0 +1,5 @@
+python-telegram-bot==22.1
+python-dotenv==1.0.0
+asyncio
+requests
+requests-html

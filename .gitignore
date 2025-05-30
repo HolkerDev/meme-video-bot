@@ -1,0 +1,7 @@
+.env
+/venv/
+/data/
+/.zed/
+/.ropeproject/
+**pycache**
+.DS_Store
