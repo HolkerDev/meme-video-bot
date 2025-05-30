@@ -23,7 +23,6 @@ def main():
             print("❌ Error: .env file not found!")
             print("📝 Please copy .env.example to .env and configure your bot token.")
             print("   cp .env.example .env")
-            sys.exit(1)
 
         # Import and run bot
         from main import InstagramReelsBot
