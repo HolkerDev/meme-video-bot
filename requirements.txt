@@ -4,3 +4,4 @@ asyncio
 requests
 requests-html
 instaloader
+pytubefix

@@ -8,6 +8,7 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import ChatAction
 from typing import List
 from loader import Loader
+import youtube
 
 # Load environment variables
 load_dotenv()
@@ -40,14 +41,31 @@ class InstagramReelsBot:
             r'https?://instagr\.am/reel/([a-zA-Z0-9_-]+)'
         ]
 
+        self.youtube_patterns = [
+            r'https?://(?:www\.)?youtube\.com/watch\?v=([a-zA-Z0-9_-]+)',
+            r'https?://youtu\.be/([a-zA-Z0-9_-]+)',
+            r'https?://(?:www\.)?youtube\.com/playlist\?list=([a-zA-Z0-9_-]+)',
+            r'https?://(?:www\.)?youtube\.com/channel/([a-zA-Z0-9_-]+)',
+            r'https?://(?:www\.)?youtube\.com/user/([a-zA-Z0-9_-]+)',
+            r'https?://(?:www\.)?youtube\.com/shorts/([a-zA-Z0-9_-]+)'
+        ]
+
         self.application = None
 
     async def is_instagram_reels_link(self, text: str) -> bool:
-        """Check if the text contains Instagram Reels links."""
         if not text:
             return False
 
         for pattern in self.instagram_reels_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                return True
+        return False
+
+    async def is_youtube_link(self, text: str) -> bool:
+        if not text:
+            return False
+
+        for pattern in self.youtube_patterns:
             if re.search(pattern, text, re.IGNORECASE):
                 return True
         return False
@@ -69,13 +87,19 @@ class InstagramReelsBot:
             if not message:
                 return
 
-            # Check if we should monitor this specific channel
-            # if self.target_channel_id:
-            #     if str(message.chat.id) != self.target_channel_id:
-            #         return
-
-            # Check if message contains Instagram Reels link
             message_text = message.text or message.caption or ""
+            if await self.is_youtube_link(message_text):
+                await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
+                path = youtube.download_youtube_video(message_text)
+
+                if path.endswith('.mp4'):
+                    await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.UPLOAD_VIDEO)
+                    # Send video to the chat
+                    await self.application.bot.send_video(chat_id=message.chat.id, video=open(path, 'rb'))
+
+                await message.set_reaction(self.reaction_emoji)
+                logger.info(f"Successfully reacted with {self.reaction_emoji} to message {message.message_id}")
+                self.loader.clear(path)
 
             if await self.is_instagram_reels_link(message_text):
                 logger.info(f"Found Instagram Reels link in channel {message.chat.title} (ID: {message.chat.id})")

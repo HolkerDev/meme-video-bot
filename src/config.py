@@ -24,6 +24,11 @@ class BotConfig:
         r'https?://instagr\.am/reel/([a-zA-Z0-9_-]+)'
     ]
 
+    YOUTUBE_PATTERNS = [
+        r'https?://(?:www\.)?youtube\.com/watch\?v=([a-zA-Z0-9_-]+)',
+        r'https?://(?:www\.)?youtu\.be/([a-zA-Z0-9_-]+)'
+    ]
+
     @classmethod
     def validate(cls):
         """Validate required configuration."""
