@@ -94,10 +94,16 @@ class InstagramReelsBot:
                     return
 
                 # Show upload video indicator while sending
-                await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.UPLOAD_VIDEO)
-
-                # Send video to the chat
-                await self.application.bot.send_video(chat_id=message.chat.id, video=open(path, 'rb'))
+                if path.endswith('.mp4'):
+                    await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.UPLOAD_VIDEO)
+                    # Send video to the chat
+                    await self.application.bot.send_video(chat_id=message.chat.id, video=open(path, 'rb'))
+                elif path.endswith('.jpg'):
+                    await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.UPLOAD_PHOTO)
+                    await self.application.bot.send_photo(chat_id=message.chat.id, photo=open(path, 'rb'))
+                else:
+                    logger.error(f"Unsupported file type: {path}")
+                    return
 
                 await message.set_reaction(self.reaction_emoji)
                 logger.info(f"Successfully reacted with {self.reaction_emoji} to message {message.message_id}")

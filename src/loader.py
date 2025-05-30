@@ -17,12 +17,22 @@ class Loader:
 
         # Ensure that only video posts are downloaded
         if not post.is_video:
-            raise RuntimeError("The provided URL does not point to a video reel.")
+            return self.get_img_path(shortcode)
+        return self.get_video_path(shortcode)
 
+    def get_video_path(self, download_path:str) -> Optional[str]:
         src :Optional[str]=None
-        for file in os.listdir(shortcode):
+        for file in os.listdir(download_path):
             if file.endswith('.mp4'):
-                src = os.path.join(shortcode, file)
+                src = os.path.join(download_path, file)
+                break
+        return src
+
+    def get_img_path(self, download_path:str) -> Optional[str]:
+        src :Optional[str]=None
+        for file in os.listdir(download_path):
+            if file.endswith('.jpg'):
+                src = os.path.join(download_path, file)
                 break
         return src
 

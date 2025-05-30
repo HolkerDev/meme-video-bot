@@ -3,3 +3,4 @@ python-dotenv==1.0.0
 asyncio
 requests
 requests-html
+instaloader
