@@ -9,6 +9,7 @@ from telegram.constants import ChatAction
 from typing import List
 from loader import Loader
 import youtube
+from src.tiktok import TiktokDownloader
 
 # Load environment variables
 load_dotenv()
@@ -27,6 +28,7 @@ class InstagramReelsBot:
         self.reaction_emoji = '🤡'
 
         self.loader = Loader()
+        self.tiktok = TiktokDownloader()
 
         if not self.bot_token:
             raise ValueError("BOT_TOKEN environment variable is required")
@@ -50,6 +52,10 @@ class InstagramReelsBot:
             r'https?://(?:www\.)?youtube\.com/shorts/([a-zA-Z0-9_-]+)'
         ]
 
+        self.tiktok_patterns = [
+            r'https?://vm\.tiktok\.com/([a-zA-Z0-9_-]+)',
+        ]
+
         self.application = None
 
     async def is_instagram_reels_link(self, text: str) -> bool:
@@ -66,6 +72,15 @@ class InstagramReelsBot:
             return False
 
         for pattern in self.youtube_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                return True
+        return False
+
+    async def is_tiktok_link(self, text: str) -> bool:
+        if not text:
+            return False
+
+        for pattern in self.tiktok_patterns:
             if re.search(pattern, text, re.IGNORECASE):
                 return True
         return False
@@ -88,6 +103,15 @@ class InstagramReelsBot:
                 return
 
             message_text = message.text or message.caption or ""
+            if await self.is_tiktok_link(message_text):
+                print("TikTok link found")
+                await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
+                path = self.tiktok.download(message_text)
+                await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.UPLOAD_VIDEO)
+                await self.application.bot.send_video(chat_id=message.chat.id, video=open(path, 'rb'))
+                self.tiktok.clean(path)
+                return
+
             if await self.is_youtube_link(message_text):
                 await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
                 path = youtube.download_youtube_video(message_text)

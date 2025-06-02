@@ -1,6 +1,5 @@
 .git
 .gitignore
-.env
 .vscode
 .idea
 __pycache__
