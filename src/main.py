@@ -122,6 +122,8 @@ class InstagramReelsBot:
             message_text = message.text or message.caption or ""
             if await self.is_tiktok_link(message_text):
                 print("TikTok link found")
+                if message_text[-1] == "/":
+                    message_text = message_text[0:-1]
                 await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
                 path = self.tiktok.download(message_text)
                 await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.UPLOAD_VIDEO)
