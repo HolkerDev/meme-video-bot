@@ -10,6 +10,7 @@ from typing import List
 from loader import Loader
 import youtube
 from src.tiktok import TiktokDownloader
+from src.twitter import TwitterDownloader
 
 # Load environment variables
 load_dotenv()
@@ -52,9 +53,16 @@ class InstagramReelsBot:
             r'https?://(?:www\.)?youtube\.com/shorts/([a-zA-Z0-9_-]+)'
         ]
 
+        self.twitter_patterns = [
+            r'https?://(?:www\.)?x\.com/([a-zA-Z0-9_-]+)',
+            r'https?://(?:www\.)?x\.com/i/([a-zA-Z0-9_-]+)'
+        ]
+
         self.tiktok_patterns = [
             r'https?://vm\.tiktok\.com/([a-zA-Z0-9_-]+)',
         ]
+
+        self.twitter = TwitterDownloader()
 
         self.application = None
 
@@ -72,6 +80,15 @@ class InstagramReelsBot:
             return False
 
         for pattern in self.youtube_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                return True
+        return False
+
+    async def is_twitter_link(self, text: str) -> bool:
+        if not text:
+            return False
+
+        for pattern in self.twitter_patterns:
             if re.search(pattern, text, re.IGNORECASE):
                 return True
         return False
@@ -111,6 +128,17 @@ class InstagramReelsBot:
                 await self.application.bot.send_video(chat_id=message.chat.id, video=open(path, 'rb'))
                 self.tiktok.clean(path)
                 return
+
+            if await self.is_twitter_link(message_text):
+                await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
+                path = self.twitter.download(message_text)
+                await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.UPLOAD_VIDEO)
+                # Send video to the chat
+                await self.application.bot.send_video(chat_id=message.chat.id, video=open(path, 'rb'))
+
+                await message.set_reaction(self.reaction_emoji)
+                logger.info(f"Successfully reacted with {self.reaction_emoji} to message {message.message_id}")
+                self.twitter.clean(path)
 
             if await self.is_youtube_link(message_text):
                 await context.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
