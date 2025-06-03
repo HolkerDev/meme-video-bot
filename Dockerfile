@@ -9,14 +9,13 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Copy source code
+COPY . .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install tmp/instaloader
 
-# Copy source code
-COPY . .
 
 # Set environment variables
 ENV PYTHONPATH=/app/src
