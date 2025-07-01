@@ -8,7 +8,7 @@ from typing import Optional
 class Loader:
     def __init__(self):
         self.loader = instaloader.Instaloader()
-        self.loader.load_session_from_file("nick.pen12", filename="sessions/session-nick.pen12.")
+        self.loader.load_session_from_file("nick.pen12", filename="sessions/session-nick.pen12")
         self.loader.context.iphone_support = False
         self.loader.context._full_metadata = False
         self.loader.context._post_metadata_txt_pattern = None
