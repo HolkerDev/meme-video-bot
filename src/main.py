@@ -18,9 +18,10 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=getattr(logging, os.getenv('LOG_LEVEL', 'INFO'))
+    level=getattr(logging, os.getenv('LOG_LEVEL', 'WARNING'))
 )
 logger = logging.getLogger(__name__)
+logging.getLogger("httpx").setLevel(logging.CRITICAL)
 
 class InstagramReelsBot:
     def __init__(self):
