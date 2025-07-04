@@ -61,6 +61,7 @@ class InstagramReelsBot:
 
         self.tiktok_patterns = [
             r'https?://vm\.tiktok\.com/([a-zA-Z0-9_-]+)',
+            r'https?://(?:www\.)?tiktok\.com/@[a-zA-Z0-9_.-]+/video/([0-9]+)',
         ]
 
         self.twitter = TwitterDownloader()

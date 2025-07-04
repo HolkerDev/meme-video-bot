@@ -7,11 +7,9 @@ from typing import Optional
 
 class Loader:
     def __init__(self):
-        self.loader = instaloader.Instaloader(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0", save_metadata=False)
+        self.loader = instaloader.Instaloader(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0" )
         self.loader.load_session_from_file("nick.pen12", filename="sessions/session-nick.pen12")
         self.loader.context.iphone_support = True
-        self.loader.context._full_metadata = False
-        self.loader.context._post_metadata_txt_pattern = None
         self.last_download_time = 0
         self.lock = threading.Lock()
 
