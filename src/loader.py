@@ -7,7 +7,7 @@ from typing import Optional
 
 class Loader:
     def __init__(self):
-        self.loader = instaloader.Instaloader(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0" )
+        self.loader = instaloader.Instaloader(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" )
         self.loader.load_session_from_file("nick.pen12", filename="sessions/session-nick.pen12")
         self.loader.context.iphone_support = True
         self.last_download_time = 0
@@ -20,8 +20,8 @@ class Loader:
             current_time = time.time()
             time_since_last = current_time - self.last_download_time
 
-            if time_since_last < 5.0:
-                sleep_time = 5.0 - time_since_last
+            if time_since_last < 10.0:
+                sleep_time = 10.0 - time_since_last
                 print(f"[LOADER] Waiting {sleep_time:.1f} seconds before download...")
                 time.sleep(sleep_time)
 
