@@ -9,7 +9,7 @@ class Loader:
     def __init__(self):
         self.loader = instaloader.Instaloader()
         self.loader.load_session_from_file("nick.pen12", filename="sessions/session-nick.pen12")
-        self.loader.context.iphone_support = True
+
         self.last_download_time = 0
         self.lock = threading.Lock()
 

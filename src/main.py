@@ -11,6 +11,7 @@ from loader import Loader
 import youtube
 from src.tiktok import TiktokDownloader
 from src.twitter import TwitterDownloader
+from src.helper import get_real_instagram_url
 
 # Load environment variables
 load_dotenv()
@@ -38,8 +39,9 @@ class InstagramReelsBot:
         # Regex patterns for Instagram Reels URLs
         self.instagram_reels_patterns = [
             r'https?://(?:www\.)?instagram\.com/reels?/([a-zA-Z0-9_-]+)',
-            r'https?://(?:www\.)?instagram\.com/p/([a-zA-Z0-9_-]+)',  # Posts that might be reels
+            r'https?://(?:www\.)?instagram\.com/p/([a-zA-Z0-9_-]+)',
             r'https?://(?:www\.)?instagram\.com/reel/([a-zA-Z0-9_-]+)',
+            r'https?://(?:www\.)?instagram\.com/share/([a-zA-Z0-9_-]+)',
             r'https?://instagr\.am/reels?/([a-zA-Z0-9_-]+)',
             r'https?://instagr\.am/p/([a-zA-Z0-9_-]+)',
             r'https?://instagr\.am/reel/([a-zA-Z0-9_-]+)'
@@ -106,6 +108,11 @@ class InstagramReelsBot:
 
     async def extract_instagram_urls(self, text: str) -> List[str]:
         """Extract all Instagram URLs from text."""
+
+        possibleUrl = get_real_instagram_url(text)
+        if possibleUrl is not None:
+            text = possibleUrl
+
         urls: List[str] = []
         for pattern in self.instagram_reels_patterns:
             matches = re.findall(pattern, text, re.IGNORECASE)
